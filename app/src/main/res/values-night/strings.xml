@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">CurrencyApp</string>
+    <string name="powitanie">Welcome to the Currency application, click the button to proceed.</string>
+</resources>
