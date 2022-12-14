@@ -31,17 +31,19 @@ class CurrencyListViewModel(private val fixerRepository: FixerRepository) : View
     }
 
     fun updateCurrencyList() {
-        fixerRepository.downloadAPI(dateToString(), object : ApiCallback {
-            override fun onActionSuccess(successItem: FixerItem?) {
-                fixerDataItem.value = successItem
-                changeCurrencyItem()
-                updateDate()
-            }
+        data.value?.let { fixerRepository.dateToString(it) }?.let {
+            fixerRepository.downloadAPI(it, object : ApiCallback {
+                override fun onActionSuccess(successItem: FixerItem?) {
+                    fixerDataItem.value = successItem
+                    changeCurrencyItem()
+                    updateDate()
+                }
 
-            override fun onActionFailure(throwableError: Throwable?) {
-                Log.i(TAG, "Throwable error: " + throwableError.toString())
-            }
-        })
+                override fun onActionFailure(throwableError: Throwable?) {
+                    Log.i(TAG, "Throwable error: " + throwableError.toString())
+                }
+            })
+        }
     }
 
     fun setCurrencyItem(currItem: CurrencyItem) {
@@ -66,28 +68,6 @@ class CurrencyListViewModel(private val fixerRepository: FixerRepository) : View
         data.postValue(calendar)
     }
 
-    fun dateToString(): String {
-        var date = StringBuilder()
-        val year = data.value?.get(Calendar.YEAR)
-        date.append(year)
-        date.append("-")
-
-        val month = data.value?.get(Calendar.MONTH)
-        if (month!! < 10)
-            date.append("0" + month)
-        else
-            date.append(month)
-        date.append("-")
-
-        val day = data.value?.get(Calendar.DAY_OF_MONTH)
-        if (day!! < 10)
-            date.append("0" + day)
-        else
-            date.append(day)
-
-        return date.toString()
-    }
-
     fun querySize(): Int {
         return queryFixer.value?.listCurrencyDisplayed?.size ?: 0
     }
@@ -99,7 +79,7 @@ class CurrencyListViewModel(private val fixerRepository: FixerRepository) : View
             if (i == 0)
                 tempList?.add(
                     CurrencyItem(
-                        date = dateToString(),
+                        date = data.value?.let { fixerRepository.dateToString(it) },
                         isDate = true
                     )
                 )
@@ -110,7 +90,7 @@ class CurrencyListViewModel(private val fixerRepository: FixerRepository) : View
 
                 tempList?.add(
                     CurrencyItem(
-                        date = dateToString(),
+                        date = data.value?.let { fixerRepository.dateToString(it) },
                         isDate = false,
                         currencyName = currencyName,
                         currencyValue = currencyValue

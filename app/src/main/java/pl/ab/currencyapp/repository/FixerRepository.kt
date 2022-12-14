@@ -12,6 +12,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.Calendar
 
 class FixerRepository {
 
@@ -41,13 +42,32 @@ class FixerRepository {
     }
 
     fun getDefaultCurrencies(): QueryFixer {
-        val query = QueryFixer(listOf("PLN", "USD", "GBP", "CHF", "SEK"))
+        val query = QueryFixer(listOf("PLN", "USD", "GBP", "CHF", "SEK")) // temporary
         return query
     }
 
-    /**
-     * Funkcja wyznaczająca wartość waluty
-     */
+    fun dateToString(data: Calendar): String {
+        val date = StringBuilder()
+        val year = data.get(Calendar.YEAR)
+        date.append(year)
+        date.append("-")
+
+        val month = data.get(Calendar.MONTH)
+        if (month < 10)
+            date.append("0" + month)
+        else
+            date.append(month)
+        date.append("-")
+
+        val day = data.get(Calendar.DAY_OF_MONTH)
+        if (day < 10)
+            date.append("0" + day)
+        else
+            date.append(day)
+
+        return date.toString()
+    }
+
     fun ratesValue(currency: String, fixerItem: FixerItem): Double? {
         when(currency) {
             "AED" -> return fixerItem.rates?.AED
@@ -219,6 +239,6 @@ class FixerRepository {
             "ZMW" -> return fixerItem.rates?.ZMW
             "ZWL" -> return fixerItem.rates?.ZWL
         }
-        return 0.0;
+        return 0.0
     }
 }
